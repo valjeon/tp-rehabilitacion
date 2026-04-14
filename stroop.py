@@ -174,7 +174,7 @@ def main():
                     mouse_pos = pygame.mouse.get_pos()
                     # Si hace click en salir
                     if quit_button.collidepoint(mouse_pos):
-                        guardar_resultado("stroop_parcial", results)
+                        #guardar_resultado("stroop_parcial", results)
                         return  # vuelve al menú / termina el juego
                     for name, rect in buttons:
                         if rect.collidepoint(mouse_pos):
