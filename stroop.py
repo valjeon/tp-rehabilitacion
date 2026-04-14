@@ -22,6 +22,12 @@ button_font = pygame.font.SysFont(None, 40)
 trials = 10
 results = []
 
+# 
+#CONGRUENT_RT_MEAN_MS = 550
+MAX_promedio_incongruente = 850
+MIN_promedio_incongruente = 750
+#NEUTRAL_RT_MEAN_MS = 600
+
 # Crear botones
 def create_buttons():
     buttons = []
@@ -214,10 +220,18 @@ def main():
                 txt1 = button_font.render(f"Aciertos: {correct_count}", True, (0, 0, 0))
                 txt2 = button_font.render(f"Precisión: {accuracy}%", True, (0, 0, 0))
                 txt3 = button_font.render(f"Tiempo promedio: {avg_reaction}s", True, (0, 0, 0))
+                if avg_reaction > MAX_promedio_incongruente:
+                    txt4 = button_font.render(f"Tuvo un rendimiento más bajo que el promedio", True, (255, 0, 0))
+                elif avg_reaction <= MAX_promedio_incongruente and avg_reaction >= MAX_promedio_incongruente:
+                    txt4 = button_font.render(f"Tuvo un rendimiento dentro del promedio", True, (0, 255, 0))
+                else:
+                    txt4 = button_font.render(f"Tuvo un rendimiento mejor que el promedio!!!", True, (0, 0, 255))
+
 
                 screen.blit(txt1, (250, 200))
                 screen.blit(txt2, (250, 250))
                 screen.blit(txt3, (250, 300))
+                screen.blit(txt4, (250, 300))
 
                 menu_button = pygame.Rect(300, 420, 250, 60)
 

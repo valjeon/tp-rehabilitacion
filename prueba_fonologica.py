@@ -8,7 +8,6 @@ ANCHO = 800
 ALTO = 600
 X = 50
 WIDTH = 700
-
 pygame.init()
 
 pantalla = pygame.display.set_mode((800, 600)) #defino el tamaño de la pantalla del juego
