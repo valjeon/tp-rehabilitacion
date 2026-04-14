@@ -128,18 +128,15 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 if buttons[0][1].collidepoint(event.pos):
-
                     stroop.main()
 
                 elif buttons[1][1].collidepoint(event.pos):
-
                     secuenciacion2.main()
-                elif buttons[2][1].collidepoint(event.pos):
 
+                elif buttons[2][1].collidepoint(event.pos):
                     prueba_fonologica.main()
 
                 elif buttons[3][1].collidepoint(event.pos):
-
                     pygame.quit()
                     sys.exit()
 

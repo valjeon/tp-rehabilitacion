@@ -40,6 +40,7 @@ def create_buttons():
     return buttons
 
 buttons = create_buttons()
+quit_button = pygame.Rect(WIDTH - 140, 20, 120, 40)
 
 def draw_screen(word, color):
     screen.fill((255, 255, 255))
@@ -55,6 +56,15 @@ def draw_screen(word, color):
         label = render_text_fit(name, rect.width)
         label_rect = label.get_rect(center=rect.center)
         screen.blit(label, label_rect)
+    
+    # Botón salir
+    mouse = pygame.mouse.get_pos()
+    color_btn = (200, 80, 80) if quit_button.collidepoint(mouse) else (150, 50, 50)
+    pygame.draw.rect(screen, color_btn, quit_button)
+
+    quit_text = button_font.render("Salir", True, (255, 255, 255))
+    quit_rect = quit_text.get_rect(center=quit_button.center)
+    screen.blit(quit_text, quit_rect)
 
     pygame.display.flip()
 
@@ -149,7 +159,6 @@ def main():
 
     while running and trial_count < trials:
         word, color, correct_answer = get_random_stimulus()
-
         answered = False
         start_time = time.time()
 
@@ -163,7 +172,10 @@ def main():
 
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     mouse_pos = pygame.mouse.get_pos()
-
+                    # Si hace click en salir
+                    if quit_button.collidepoint(mouse_pos):
+                        guardar_resultado("stroop_parcial", results)
+                        return  # vuelve al menú / termina el juego
                     for name, rect in buttons:
                         if rect.collidepoint(mouse_pos):
                             reaction_time = time.time() - start_time
@@ -186,9 +198,7 @@ def main():
                             }
 
                             results.append(trial_data)
-
                             show_feedback(correct)
-
                             answered = True
                             break
 
@@ -222,7 +232,7 @@ def main():
                 txt3 = button_font.render(f"Tiempo promedio: {avg_reaction}s", True, (0, 0, 0))
                 if avg_reaction > MAX_promedio_incongruente:
                     txt4 = button_font.render(f"Tuvo un rendimiento más bajo que el promedio", True, (255, 0, 0))
-                elif avg_reaction <= MAX_promedio_incongruente and avg_reaction >= MAX_promedio_incongruente:
+                elif MIN_promedio_incongruente <= avg_reaction <= MAX_promedio_incongruente:
                     txt4 = button_font.render(f"Tuvo un rendimiento dentro del promedio", True, (0, 255, 0))
                 else:
                     txt4 = button_font.render(f"Tuvo un rendimiento mejor que el promedio!!!", True, (0, 0, 255))
@@ -251,9 +261,9 @@ def main():
 
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if menu_button.collidepoint(event.pos):
-                            return
+                            return 
 
-    return
+    return 
 
 if __name__ == "__main__":
     main()
