@@ -19,8 +19,8 @@ Los resultados se guardan en un archivo json en la misma carpeta donde se encuen
 1. Clonar el repositorio
 
 ```bash
-git clone <URL-del-repo>
-cd <nombre-del-repo>
+git clone <https://github.com/valjeon/tp-rehabilitacion>
+cd <tp-rehabilitacion>
 ```
 
 2. Crear entorno virtual
