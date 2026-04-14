@@ -213,9 +213,9 @@ def main():
             while running_results:
 
                 screen.fill((255, 255, 255))
-
                 title = font.render("Resultados Stroop", True, (0, 0, 0))
-                screen.blit(title, (WIDTH//2 - title.get_width()//2, 100))
+                centro = WIDTH//2 - title.get_width()//2
+                screen.blit(title, (centro, 100))
 
                 txt1 = button_font.render(f"Aciertos: {correct_count}", True, (0, 0, 0))
                 txt2 = button_font.render(f"Precisión: {accuracy}%", True, (0, 0, 0))
@@ -227,11 +227,10 @@ def main():
                 else:
                     txt4 = button_font.render(f"Tuvo un rendimiento mejor que el promedio!!!", True, (0, 0, 255))
 
-
-                screen.blit(txt1, (250, 200))
-                screen.blit(txt2, (250, 250))
-                screen.blit(txt3, (250, 300))
-                screen.blit(txt4, (250, 300))
+                screen.blit(txt1, (centro, 200))
+                screen.blit(txt2, (centro, 250))
+                screen.blit(txt3, (centro, 300))
+                screen.blit(txt4, (centro, 350))
 
                 menu_button = pygame.Rect(300, 420, 250, 60)
 
@@ -241,7 +240,8 @@ def main():
                 pygame.draw.rect(screen, color, menu_button)
 
                 txt = button_font.render("Volver al menú", True, (255, 255, 255))
-                screen.blit(txt, (menu_button.x + 10, menu_button.y + 15))
+                txt_rect = txt.get_rect(center=menu_button.center)
+                screen.blit(txt, txt_rect)
 
                 pygame.display.flip()
 
@@ -252,11 +252,6 @@ def main():
                     if event.type == pygame.MOUSEBUTTONDOWN:
                         if menu_button.collidepoint(event.pos):
                             return
-                        
-                
-        
-
-    
 
     return
 

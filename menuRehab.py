@@ -28,7 +28,7 @@ TEXT = (255, 255, 255)
 buttons = []
 
 nombres = [
-    " Stroop",
+    "Stroop",
     "Secuenciacion AVD",
     "Prueba fonologica",
     "Salir"
@@ -62,27 +62,25 @@ def dibujar_texto_ajustado(surface, texto, rect, font, color):
         if font.size(prueba)[0] <= rect.width - 20:
             linea_actual = prueba
         else:
-            lineas.append(linea_actual)
+            lineas.append(linea_actual.strip())
             linea_actual = palabra + " "
 
-    lineas.append(linea_actual)
+    lineas.append(linea_actual.strip())
 
-    y = rect.y + 5
+    total_altura = len(lineas) * font.get_height()
+    y = rect.y + (rect.height - total_altura)//2
 
     for linea in lineas:
 
         texto_render = font.render(
-            linea.strip(),
+            linea,
             True,
             color
         )
-
+        x = rect.x + (rect.width - texto_render.get_width())//2
         surface.blit(
             texto_render,
-            (
-                rect.x + 10,
-                y
-            )
+            (x,y)
         )
 
         y += font.get_height()
