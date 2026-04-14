@@ -1,0 +1,250 @@
+import pygame
+import random
+import time
+from guardar_datos import guardar_resultado
+
+pygame.init()
+
+WIDTH, HEIGHT = 800, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Efecto Stroop")
+
+colors = {
+    "ROJO": (255, 0, 0),
+    "VERDE": (0, 255, 0),
+    "AZUL": (0, 0, 255),
+    "AMARILLO": (255, 255, 0)
+}
+
+font = pygame.font.SysFont(None, 80)
+button_font = pygame.font.SysFont(None, 40)
+
+trials = 10
+results = []
+
+# Crear botones
+def create_buttons():
+    buttons = []
+    names = list(colors.keys())
+
+    for i, name in enumerate(names):
+        rect = pygame.Rect(150 + i*130, 450, 120, 50)
+        buttons.append((name, rect))
+    
+    return buttons
+
+buttons = create_buttons()
+
+def draw_screen(word, color):
+    screen.fill((255, 255, 255))
+
+    # Palabra estímulo
+    text = font.render(word, True, color)
+    rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 3))
+    screen.blit(text, rect)
+
+    # Dibujar botones
+    for name, rect in buttons:
+        pygame.draw.rect(screen, colors[name], rect)
+        label = render_text_fit(name, rect.width)
+        label_rect = label.get_rect(center=rect.center)
+        screen.blit(label, label_rect)
+
+    pygame.display.flip()
+
+def render_text_fit(text, max_width):
+    size = 40
+    while size > 10:
+        font = pygame.font.SysFont(None, size)
+        surface = font.render(text, True, (0, 0, 0))
+        if surface.get_width() <= max_width - 10:
+            return surface
+        size -= 1
+    return surface
+
+def show_feedback(correct):
+    screen.fill((255, 255, 255))
+    msg = "CORRECTO" if correct else "INCORRECTO"
+    color = (0, 255, 0) if correct else (255, 0, 0)
+
+    text = font.render(msg, True, color)
+    rect = text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+    screen.blit(text, rect)
+
+    pygame.display.flip()
+    pygame.time.delay(300)
+
+def get_random_stimulus():
+    word = random.choice(list(colors.keys()))
+    color_name = random.choice(list(colors.keys()))
+    return word, colors[color_name], color_name
+
+#-------------------------------------PRIMERA PANTALLA, antes de que empiece el juego----------------------------------------------------
+def show_instructions():
+    waiting = True
+
+    start_button = pygame.Rect(300, 400, 200, 60)
+
+    while waiting:
+        screen.fill((255, 255, 255))
+
+        # Title
+        title = font.render("Efecto Stroop", True, (0, 0, 0))
+        screen.blit(title, (WIDTH//2 - title.get_width()//2, 80))
+
+        # Instructions (multiple lines)
+        instructions = [
+            "Seleccione el COLOR de la palabra,",
+            "NO el significado del texto.",
+            "",
+            "Haga clic en el botón correcto lo más rápido posible."
+        ]
+
+        for i, line in enumerate(instructions):
+            txt = button_font.render(line, True, (0, 0, 0))
+            screen.blit(txt, (WIDTH//2 - txt.get_width()//2, 180 + i*40))
+
+        # Button hover effect
+        mouse = pygame.mouse.get_pos()
+        color = (150, 180, 255) if start_button.collidepoint(mouse) else (100, 150, 255)
+
+        pygame.draw.rect(screen, color, start_button)
+
+        button_text = button_font.render("Comenzar", True, (255, 255, 255))
+        screen.blit(button_text, (
+            start_button.x + (start_button.width - button_text.get_width()) // 2,
+            start_button.y + 15
+        ))
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return False
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if start_button.collidepoint(event.pos):
+                    return True
+
+
+def main():
+
+    if not show_instructions():
+            return
+    
+    correct_count = 0
+    reaction_times=[]
+    running = True
+    trial_count = 0
+    #state = "game"
+    accuracy = 0
+    avg_reaction = 0
+    
+
+    while running and trial_count < trials:
+        word, color, correct_answer = get_random_stimulus()
+
+        answered = False
+        start_time = time.time()
+
+        while not answered:
+            draw_screen(word, color)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                    answered = True
+
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    mouse_pos = pygame.mouse.get_pos()
+
+                    for name, rect in buttons:
+                        if rect.collidepoint(mouse_pos):
+                            reaction_time = time.time() - start_time
+                            user_answer = name
+                            correct = user_answer == correct_answer
+
+                            if correct:
+                                correct_count += 1
+
+                            reaction_times.append(reaction_time)
+
+                            trial_data = {
+                                "trial": trial_count + 1,
+                                "word": word,
+                                "color_correct": correct_answer,
+                                "response": user_answer,
+                                "correct": correct,
+                                "reaction_time_sec": round(reaction_time, 3),
+                                "condition": "congruente" if word == correct_answer else "incongruente"
+                            }
+
+                            results.append(trial_data)
+
+                            show_feedback(correct)
+
+                            answered = True
+                            break
+
+        trial_count += 1
+
+        if trial_count == trials:
+
+            accuracy = round((correct_count / trials) * 100, 2)
+            avg_reaction = round(sum(reaction_times) / len(reaction_times), 3)
+
+            guardar_resultado("stroop_resumen", {
+                    "total_trials": trials,
+                    "aciertos": correct_count,
+                    "errores": trials - correct_count,
+                    "accuracy_percent": accuracy,
+                    "reaction_times": reaction_times,
+                    "average_reaction_time": avg_reaction
+                })
+            
+            running_results = True
+
+            while running_results:
+
+                screen.fill((255, 255, 255))
+
+                title = font.render("Resultados Stroop", True, (0, 0, 0))
+                screen.blit(title, (WIDTH//2 - title.get_width()//2, 100))
+
+                txt1 = button_font.render(f"Aciertos: {correct_count}", True, (0, 0, 0))
+                txt2 = button_font.render(f"Precisión: {accuracy}%", True, (0, 0, 0))
+                txt3 = button_font.render(f"Tiempo promedio: {avg_reaction}s", True, (0, 0, 0))
+
+                screen.blit(txt1, (250, 200))
+                screen.blit(txt2, (250, 250))
+                screen.blit(txt3, (250, 300))
+
+                menu_button = pygame.Rect(300, 420, 250, 60)
+
+                mouse = pygame.mouse.get_pos()
+                color = (150, 180, 255) if menu_button.collidepoint(mouse) else (100, 150, 255)
+
+                pygame.draw.rect(screen, color, menu_button)
+
+                txt = button_font.render("Volver al menú", True, (255, 255, 255))
+                screen.blit(txt, (menu_button.x + 10, menu_button.y + 15))
+
+                pygame.display.flip()
+
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        return
+
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if menu_button.collidepoint(event.pos):
+                            return
+                        
+                
+        
+
+    
+
+    return
+
+if __name__ == "__main__":
+    main()

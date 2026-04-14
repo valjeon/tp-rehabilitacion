@@ -1,0 +1,44 @@
+{
+    "paciente": {
+        "nombre": "valne",
+        "edad": "56",
+        "id": "88899"
+    },
+    "resultados": [
+        {
+            "actividad": "stroop_resumen",
+            "fecha": "2026-04-11 18:10:27",
+            "total_trials": 10,
+            "aciertos": 0,
+            "errores": 10,
+            "accuracy_percent": 0.0,
+            "reaction_times": [
+                0.7500307559967041,
+                0.31937098503112793,
+                0.5649428367614746,
+                0.2853419780731201,
+                0.31651997566223145,
+                0.3655390739440918,
+                0.3525838851928711,
+                0.3155021667480469,
+                0.3673989772796631,
+                0.3510551452636719
+            ],
+            "average_reaction_time": 0.399
+        },
+        {
+            "actividad": "secuenciacion_resumen",
+            "fecha": "2026-04-11 18:10:48",
+            "aciertos": 0,
+            "errores": 5,
+            "tiempo_promedio": 2.91,
+            "tiempos_rondas": [
+                3.2,
+                3.35,
+                1.86,
+                2.82,
+                3.33
+            ]
+        }
+    ]
+}

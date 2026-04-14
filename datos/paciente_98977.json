@@ -1,0 +1,23 @@
+{
+    "paciente": {
+        "nombre": "njooj",
+        "edad": "88",
+        "id": "98977"
+    },
+    "resultados": [
+        {
+            "actividad": "secuenciacion_resumen",
+            "fecha": "2026-04-11 18:05:44",
+            "aciertos": 0,
+            "errores": 5,
+            "tiempo_promedio": 2.96,
+            "tiempos_rondas": [
+                2.85,
+                3.57,
+                1.84,
+                3.38,
+                3.15
+            ]
+        }
+    ]
+}

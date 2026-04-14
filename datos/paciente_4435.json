@@ -1,0 +1,23 @@
+{
+    "paciente": {
+        "nombre": "gshg",
+        "edad": "56",
+        "id": "4435"
+    },
+    "resultados": [
+        {
+            "actividad": "Prueba Fonol\u00f3gica",
+            "fecha": "2026-04-13 13:18:27",
+            "correctas": 5,
+            "incorrectas": 0,
+            "tiempos_respuesta": [
+                1.664,
+                3.897,
+                5.614,
+                7.581,
+                9.214
+            ],
+            "tiempo_promedio": 5.593999999999999
+        }
+    ]
+}

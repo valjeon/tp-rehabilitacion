@@ -1,0 +1,23 @@
+{
+    "paciente": {
+        "nombre": "chch",
+        "edad": "90",
+        "id": "90909"
+    },
+    "resultados": [
+        {
+            "actividad": "Prueba Fonol\u00f3gica",
+            "fecha": "2026-04-13 13:50:26",
+            "correctas": 5,
+            "incorrectas": 0,
+            "tiempos_respuesta": [
+                8.915,
+                12.282,
+                14.431,
+                16.565,
+                18.232
+            ],
+            "tiempo_promedio": 14.084999999999999
+        }
+    ]
+}
