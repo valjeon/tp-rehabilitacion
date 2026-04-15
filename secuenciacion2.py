@@ -185,16 +185,13 @@ def main():
             )
 
         # MENSAJE
-
         if estado == "resultado":
             color = GREEN if mensaje == "Correcto" else RED
-
             msg = big_font.render(
                 mensaje,
                 True,
                 color
             )
-
             screen.blit(
                 msg,
                 (
@@ -203,7 +200,6 @@ def main():
                 )
             )
             
-
             mouse_pos = pygame.mouse.get_pos()
 
             boton_reintentar = pygame.Rect(
@@ -212,7 +208,6 @@ def main():
                 150,
                 60
             )
-
             boton_menu = pygame.Rect(
                 WIDTH//2 + 20,
                 500,
@@ -220,7 +215,6 @@ def main():
                 60
             )
 
-            # Hover
 
             color1 = HOVER if boton_reintentar.collidepoint(mouse_pos) else BUTTON
             color2 = HOVER if boton_menu.collidepoint(mouse_pos) else BUTTON
@@ -251,6 +245,7 @@ def main():
             screen.fill(WHITE)
 
             if tiempos:
+                #hace un promedio de lo que tardó en cada ronda
                 promedio = round(sum(tiempos) / len(tiempos), 2)
             else:
                 promedio = 0
@@ -316,23 +311,15 @@ def main():
             )
                 
 
-             
-        # -------------------------
-        # AVANZAR AUTOMÁTICAMENTE
-        # -------------------------
 
         if estado == "mostrando_resultado":
 
             if time.time() - mensaje_tiempo > 1:
 
                 if ronda_actual < TOTAL_RONDAS:
-
                     ronda_actual += 1
-
                     nueva_actividad()
-
                     mensaje = ""
-
                     estado = "jugando"
 
                 else:
@@ -342,7 +329,7 @@ def main():
                         promedio = round(sum(tiempos) / len(tiempos), 2)
                     else:
                         promedio = 0
-
+                    #guarda los resultados en el archivo del paciente
                     guardar_resultado("secuenciacion_resumen", {
                         "aciertos": aciertos,
                         "errores": errores,
@@ -351,18 +338,12 @@ def main():
                     })
         pygame.display.flip()
 
-        # EVENTOS
-
         for event in pygame.event.get():
 
             if event.type == pygame.QUIT:
                 return
-
+            
             if event.type == pygame.MOUSEBUTTONDOWN:
-
-    # -------------------------
-    # CLICKS DURANTE EL JUEGO
-    # -------------------------
 
                 if estado == "jugando":
 
@@ -381,7 +362,7 @@ def main():
                                     tiempos.append(tiempo_total)
 
                                     correcto = seleccionados == pasos_correctos
-
+                                    #cuenta la cantidad de rondas correctas e incorrectas
                                     if correcto:
                                         mensaje = "Correcto"
                                         aciertos += 1 
@@ -390,39 +371,27 @@ def main():
                                         errores += 1 
 
                                     mensaje_tiempo = time.time()
-
                                     estado = "mostrando_resultado"
-                
-                # -------------------------
-                # CLICKS EN RESULTADO
-                # -------------------------
 
+                #define qué hacen los clicks en resultado
                 elif estado == "resultado":
 
                     if boton_reintentar.collidepoint(event.pos):
                         if ronda_actual < TOTAL_RONDAS:
-
                             ronda_actual += 1
-
                             nueva_actividad()
-
                             mensaje = ""
                             estado = "jugando"
-
                         else:
-
                             mensaje = "Fin de la ronda"
                             estado = "fin"
 
                     if boton_menu.collidepoint(event.pos):
-
                         return   # vuelve al menú
                     
                 elif estado == "fin":
                     if boton_menu.collidepoint(event.pos):
 
                         return
-
-                                
 
         clock.tick(60)
