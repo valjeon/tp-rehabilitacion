@@ -1,23 +1,21 @@
 import pygame
 import random
 import time
+#importa listas donde se describe una actividad diaria como secuencia
 from actividades import actividades
 from guardar_datos import guardar_resultado
 
 pygame.init()
-
+#Defino las constantes y el formato de la pantalla
 WIDTH, HEIGHT = 900, 600
 X_BOTONES = 80
 ANCHO_BOTONES = 350
 X_SECUENCIA = 450
 ANCHO_SECUENCIA = 200
-
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Secuenciación AVD")
-
 font = pygame.font.SysFont(None, 36)
 big_font = pygame.font.SysFont(None, 40)
-
 WHITE = (255, 255, 255)
 GRAY = (200, 200, 200)
 BLUE = (100, 150, 255)
@@ -28,8 +26,8 @@ HOVER = (150, 180, 255)
 
 clock = pygame.time.Clock()
 
+#Función para ajustar los textos a los botones y pantalla
 def dibujar_texto_ajustado(surface, texto, rect, font, color):
-
     palabras = texto.split(" ")
     lineas = []
     linea_actual = ""
@@ -67,33 +65,30 @@ def dibujar_texto_ajustado(surface, texto, rect, font, color):
 
 
 def nueva_actividad():
-
+    #defino variables
     global actividad_actual
     global pasos_correctos
     global pasos
     global seleccionados
     global inicio_tiempo
 
+    #elige una actividad dentro del archivo de actividades  ej: cepillarse los dientes
     actividad_actual = random.choice(
         list(actividades.keys())
     )
 
     pasos_correctos = actividades[actividad_actual]
-
+    #guarda el orden correcto de la actividad
     pasos = pasos_correctos.copy()
+    #desordena los pasos
     random.shuffle(pasos)
 
     seleccionados = []
-
+    #guarda el tiempo de inicio de la ronda
     inicio_tiempo = time.time()
 
-
-
-######################################
-#------------MAIN--------------------
-
 def main():
-
+    #defino variables
     global mensaje
     global mensaje_tiempo
     global actividad_actual
@@ -104,46 +99,43 @@ def main():
 
     tiempos=[]
     estado = "jugando"
+    #defino la cantidad de rondas a jugar
     TOTAL_RONDAS = 5
+    #inicializo variables
     ronda_actual = 1
     aciertos=0
     errores=0
-    resumen_guardado = False
 
+    #Llamo a la función que elige la actividad
     nueva_actividad()
     mensaje = ""
     mensaje_tiempo = 0
-
     running = True
 
     while running:
-
+        
         screen.fill(WHITE)
-
         titulo = big_font.render(
             f"Ordená los pasos: {actividad_actual}",
             True,
             (0, 0, 0)
         )
-
         screen.blit(titulo, (180, 20))
-
+        #Muestra la ronda en la que está
         texto_ronda = font.render(
             f"Ronda {ronda_actual} / {TOTAL_RONDAS}",
             True,
             (0, 0, 0)
         )
-
         screen.blit(texto_ronda, (20, 20))
-
         
-        # BOTONES PASOS
+        #Botones de los pasos
 
         botones = []
         mouse_pos = pygame.mouse.get_pos()
 
         for i, paso in enumerate(pasos):
-
+            #ubica los botones uno abajo del otro espacionados
             rect = pygame.Rect(
                 80,
                 100 + i * 80,
@@ -153,10 +145,9 @@ def main():
             if rect.collidepoint(mouse_pos) and paso not in seleccionados:
                 color = HOVER
             elif paso in seleccionados:
-                color = (60, 90, 180)  # darker when selected
+                color = (60, 90, 180)  #Pone el botón más oscuro cuando el mouse está ahí
             else:
                 color = BLUE
-
             pygame.draw.rect(screen, color, rect)
 
             dibujar_texto_ajustado(
@@ -170,24 +161,21 @@ def main():
             botones.append(rect)
 
         # SECUENCIA ELEGIDA
-
         sec_titulo = font.render(
             "Secuencia elegida:",
             True,
             (0, 0, 0)
         )
-
         screen.blit(sec_titulo, (520, 100))
 
+        #ubica los pasos elegidos en columna
         for i, paso in enumerate(seleccionados):
-
             rect = pygame.Rect(
                 520,
                 140 + i * 70,
                 ANCHO_SECUENCIA,
                 60
             )
-
             dibujar_texto_ajustado(
                 screen,
                 f"{i+1}. {paso}",
@@ -199,8 +187,6 @@ def main():
         # MENSAJE
 
         if estado == "resultado":
-            
-
             color = GREEN if mensaje == "Correcto" else RED
 
             msg = big_font.render(

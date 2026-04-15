@@ -4,6 +4,7 @@ import os
 import guardar_datos 
 from datos_fonologicos import ejemplo1
 
+#defino las constantes y el formato de la pantalla
 ANCHO = 800
 ALTO = 600
 X = 50
@@ -14,8 +15,8 @@ pantalla = pygame.display.set_mode((800, 600)) #defino el tamaño de la pantalla
 pygame.display.set_caption("Prueba de Denominación Fonológica") #Título de la pestaña de pygame
 
 
+#Función para ajustar el texto a la pantalla
 def dibujar_texto_ajustado(surface, texto,y,font, color):
-
     rect = pygame.Rect(100, y, 600, 100)
     lineas = []
     palabras = texto.split(" ")
@@ -27,9 +28,7 @@ def dibujar_texto_ajustado(surface, texto,y,font, color):
         else:
             lineas.append(linea)
             linea = p + " "
-
     lineas.append(linea)
-
     total_altura = len(lineas) * font.get_height()
     y_offset = rect.y + (rect.height - total_altura) // 2
 
@@ -53,11 +52,10 @@ def selecciones():
     return foto_juego, opciones, imagen #la función devuelve todo para ya dejar listo el juego
 
 def prueba_fonologica():
-    #carpeta = os.path.dirname(__file__)
+    
     fuente = pygame.font.SysFont(None, 40)
-
-    tiempo_inicio_jugada = 0 #las dos  variables donde voy a contabilizar cuanto tarda en el juego el paciente
-    tiempo_total_jugando = 0
+    #inicializo las variables a utilizar
+    tiempo_inicio_jugada = 0 
     tiempos_respuesta = []
     correctas=0
     incorrectas=0
@@ -85,7 +83,6 @@ def prueba_fonologica():
         # -------- EVENTOS --------
         for event in pygame.event.get():
             if event.type == pygame.QUIT: #Cuando selecciona que quiere salir, cambio el estado a falso que detiene el while
-                print("click detectado")
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -122,13 +119,14 @@ def prueba_fonologica():
 
                 elif estado == "final":
                     if rect_volver.collidepoint(mouse_pos):
+                        #guarda en datos los resultados
                         datos = {
                                 "correctas": correctas,
                                 "incorrectas": incorrectas,
                                 "tiempos_respuesta": tiempos_respuesta,
                                 "tiempo_promedio": sum(tiempos_respuesta) / len(tiempos_respuesta) if tiempos_respuesta else 0
                             }
-                
+                        #guarda los datos en el archivo del paciente
                         guardar_datos.guardar_resultado(
                                 "Prueba Fonológica",
                                 datos
