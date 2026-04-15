@@ -22,18 +22,17 @@ actividades = {
         "Agregar azúcar"
     ],
 
-    "Vestirse": [
-        "Ponerse la ropa interior",
-        "Ponerse la remera",
-        "Ponerse el pantalón",
-        "Ponerse las medias",
-        "Ponerse los zapatos"
-    ],
-
     "Lavar ropa": [
         "Separar la ropa por colores",
         "Meter la ropa en el lavarropas",
         "Poner jabón en el lavarropas",
         "Presionar el botón de encendido"
+    ],
+    "Prepararse para salir de casa": [
+        "Higiene personal",
+        "Vestirse",
+        "Preparar llaves, celular y objetos importantes",
+        "Revisar que no falte nada",
+        "Salir de casa"
     ]
 }
