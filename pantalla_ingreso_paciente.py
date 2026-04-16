@@ -25,7 +25,7 @@ HOVER = (39, 121, 245)
 clock = pygame.time.Clock()
 
 def crear_boxes(WIDTH, HEIGHT):
-    box_width = WIDTH * 0.4
+    box_width = WIDTH * 0.3
     box_height = HEIGHT * 0.08
     start_y = HEIGHT * 0.3
     spacing = HEIGHT * 0.12
@@ -112,11 +112,12 @@ def input_paciente():
                 WHITE
             )
             #muestra en pantalla los espacios
+            label_x = boxes[campo].x - label.get_width() - 20
             screen.blit(
                 label,
                 (
-                    boxes[campo].x - 150,
-                    boxes[campo].y + 10
+                    label_x,
+                    boxes[campo].y + (boxes[campo].height - label.get_height()) // 2
                 )
             )
 
