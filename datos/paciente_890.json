@@ -1,0 +1,37 @@
+{
+    "paciente": {
+        "nombre": "valen",
+        "edad": "67",
+        "id": "890"
+    },
+    "resultados": [
+        {
+            "actividad": "Prueba Fonol\u00f3gica",
+            "fecha": "2026-04-16 07:24:45",
+            "correctas": 3,
+            "incorrectas": 2,
+            "tiempos_respuesta": [
+                1.948,
+                4.281,
+                6.364,
+                10.831,
+                11.748
+            ],
+            "tiempo_promedio": 7.0344
+        },
+        {
+            "actividad": "secuenciacion_resumen",
+            "fecha": "2026-04-16 07:25:08",
+            "aciertos": 1,
+            "errores": 4,
+            "tiempo_promedio": 3.12,
+            "tiempos_rondas": [
+                6.24,
+                1.19,
+                2.15,
+                3.38,
+                2.62
+            ]
+        }
+    ]
+}

@@ -1,0 +1,63 @@
+{
+    "paciente": {
+        "nombre": "valentina",
+        "edad": "15",
+        "id": "2567"
+    },
+    "resultados": [
+        {
+            "actividad": "stroop_resumen",
+            "fecha": "2026-04-15 16:11:03",
+            "total_trials": 10,
+            "aciertos": 7,
+            "errores": 3,
+            "accuracy_percent": 70.0,
+            "reaction_times": [
+                1.4365899562835693,
+                0.7330019474029541,
+                0.7501602172851562,
+                2.1057116985321045,
+                1.5045390129089355,
+                0.8892941474914551,
+                0.4509420394897461,
+                0.5667140483856201,
+                0.8328979015350342,
+                1.2663800716400146
+            ],
+            "average_reaction_time": 1.054
+        },
+        {
+            "actividad": "secuenciacion_resumen",
+            "fecha": "2026-04-15 16:12:18",
+            "aciertos": 0,
+            "errores": 5,
+            "tiempo_promedio": 6.45,
+            "tiempos_rondas": [
+                19.31,
+                3.55,
+                3.04,
+                1.66,
+                4.7
+            ]
+        },
+        {
+            "actividad": "Prueba Fonol\u00f3gica",
+            "fecha": "2026-04-15 16:13:52",
+            "correctas": 8,
+            "incorrectas": 2,
+            "tiempos_respuesta": [
+                13.564,
+                18.299,
+                19.931,
+                23.365,
+                29.781,
+                1.969,
+                3.914,
+                6.031,
+                7.897,
+                9.618
+            ],
+            "tiempo_promedio": 13.4369
+        }
+    ]
+}

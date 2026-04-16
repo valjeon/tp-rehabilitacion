@@ -1,5 +1,4 @@
 #CÒDIGO DEL MENU PRINCIPAL
-
 import pygame
 import sys
 #Importa el código de los juegos
@@ -11,13 +10,18 @@ import pantalla_ingreso_paciente
 
 pygame.init()
 #defino el tamaño de la pantalla
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = screen.get_size()
 pygame.display.set_caption("Menú de Juegos")
 
 #define el tamaño de las fuentes
-font = pygame.font.SysFont(None, 60)
-button_font = pygame.font.SysFont(None, 40)
+def crear_fuentes(HEIGHT):
+    title_size = int(HEIGHT * 0.1)
+    button_size = int(HEIGHT * 0.05)
+    font = pygame.font.SysFont(None, title_size)
+    button_font = pygame.font.SysFont(None, button_size)
+
+    return font, button_font
 
 #define reloj
 clock = pygame.time.Clock()
@@ -28,25 +32,32 @@ BUTTON = (100, 100, 200)
 HOVER = (150, 150, 255)
 TEXT = (255, 255, 255)
 
-# CREA LOS BOTONES
-buttons = []
-nombres = [
-    "Stroop",
-    "Secuenciacion AVD",
-    "Prueba fonologica",
-    "Salir"
-]
+def crear_botones(WIDTH, HEIGHT):
+    buttons = []
+    nombres = [
+        "Stroop",
+        "Secuenciacion AVD",
+        "Prueba fonologica",
+        "Salir"
+    ]
 
-for i, nombre in enumerate(nombres):
-    #Asigna la posición de cada botón
-    rect = pygame.Rect(
-        300,
-        200 + i * 100,
-        250,
-        70
-    )
-    buttons.append((nombre, rect))
+    button_width = WIDTH * 0.35
+    button_height = HEIGHT * 0.09
 
+    total_height = len(nombres) * button_height + (len(nombres) - 1) * HEIGHT * 0.03
+
+    start_y = (HEIGHT - total_height) // 2
+
+    for i, nombre in enumerate(nombres):
+        rect = pygame.Rect(
+            WIDTH // 2 - button_width // 2,
+            start_y + i * (button_height + HEIGHT * 0.03),
+            button_width,
+            button_height
+        )
+        buttons.append((nombre, rect))
+
+    return buttons
 
 # FUNCION PARA AJUSTAR TEXTO DENTRO DEL BOTON
 def dibujar_texto_ajustado(surface, texto, rect, font, color):
@@ -90,57 +101,52 @@ def dibujar_texto_ajustado(surface, texto, rect, font, color):
 
 
 def main_menu():
+    global screen
+
+    WIDTH, HEIGHT = screen.get_size()
 
     while True:
+        WIDTH, HEIGHT = screen.get_size()
 
-        #Defino diseño de la pantalla: color, el titulo.
+        buttons = crear_botones(WIDTH, HEIGHT)
+        font, button_font = crear_fuentes(HEIGHT)
+
         screen.fill(BACKGROUND)
+
         title = font.render("Menú de Juegos", True, TEXT)
-        screen.blit(title, (260, 100))
+        title_rect = title.get_rect(center=(WIDTH // 2, HEIGHT * 0.1))
+        screen.blit(title, title_rect)      
 
         mouse_pos = pygame.mouse.get_pos()
 
-        # DIBUJAR BOTONES
         for text, rect in buttons:
-            if rect.collidepoint(mouse_pos):
-                color = HOVER
-            else:
-                color = BUTTON
-
+            color = HOVER if rect.collidepoint(mouse_pos) else BUTTON
             pygame.draw.rect(screen, color, rect)
 
-            #ajusta el texto dentro del botón
-            dibujar_texto_ajustado(
-            screen,
-            text,
-            rect,
-            button_font,
-            TEXT
-        )
+            dibujar_texto_ajustado(screen, text, rect, button_font, TEXT)
+
         pygame.display.flip()
 
-        # Para entrar a cada juego:
         for event in pygame.event.get():
-
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            #Define qué hace cuando se presionan los botones
-            if event.type == pygame.MOUSEBUTTONDOWN:
 
+            elif event.type == pygame.VIDEORESIZE:
+                WIDTH, HEIGHT = event.w, event.h
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0][1].collidepoint(event.pos):
                     stroop.main()
-
                 elif buttons[1][1].collidepoint(event.pos):
                     secuenciacion2.main()
-
                 elif buttons[2][1].collidepoint(event.pos):
                     prueba_fonologica.main()
-
                 elif buttons[3][1].collidepoint(event.pos):
                     pygame.quit()
                     sys.exit()
-        #limira a que el juego no corra a más que 60 fps, para mejorar el rendimiento
+
         clock.tick(60)
 
 def main():

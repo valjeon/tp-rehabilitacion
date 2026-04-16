@@ -2,15 +2,18 @@ import pygame
 import paciente
 
 pygame.init()
-#defin3 las dimensiones de la pantalla y el título
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+#define las dimensiones de la pantalla y el título
+screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = screen.get_size()
 pygame.display.set_caption("Ingreso de Paciente")
 
 #defin3 las fuentes a utilizar
-font = pygame.font.SysFont(None, 48)
-label_font = pygame.font.SysFont(None, 36)
-button_font = pygame.font.SysFont(None, 40)
+def crear_fuentes(HEIGHT):
+    font = pygame.font.SysFont(None, int(HEIGHT * 0.08))
+    label_font = pygame.font.SysFont(None, int(HEIGHT * 0.05))
+    button_font = pygame.font.SysFont(None, int(HEIGHT * 0.06))
+    return font, label_font, button_font
+
 #define colores
 BACKGROUND = (30, 30, 30)
 WHITE = (255, 255, 255)
@@ -21,8 +24,35 @@ HOVER = (39, 121, 245)
 
 clock = pygame.time.Clock()
 
-def input_paciente():
+def crear_boxes(WIDTH, HEIGHT):
+    box_width = WIDTH * 0.4
+    box_height = HEIGHT * 0.08
+    start_y = HEIGHT * 0.3
+    spacing = HEIGHT * 0.12
+    campos = ["nombre", "edad", "id"]
+    boxes = {}
+    for i, campo in enumerate(campos):
+        boxes[campo] = pygame.Rect(
+            WIDTH // 2 - box_width // 2,
+            start_y + i * spacing,
+            box_width,
+            box_height
+        )
+    return boxes
 
+def crear_boton(WIDTH, HEIGHT):
+    return pygame.Rect(
+        WIDTH * 0.35,
+        HEIGHT * 0.75,
+        WIDTH * 0.3,
+        HEIGHT * 0.1
+    )
+
+def input_paciente():
+    WIDTH, HEIGHT = screen.get_size()
+    font, label_font, button_font = crear_fuentes(HEIGHT)
+    boxes = crear_boxes(WIDTH, HEIGHT)
+    boton_rect = crear_boton(WIDTH, HEIGHT)
     #defino qué datos le va a pedir
     nombre = ""
     edad = ""
@@ -37,20 +67,17 @@ def input_paciente():
 
     activo = "nombre"
     #define los tamaños de los espacios en donde se va a escribir
-    boxes = {
-        "nombre": pygame.Rect(300, 200, 250, 50),
-        "edad": pygame.Rect(300, 280, 250, 50),
-        "id": pygame.Rect(300, 360, 250, 50)
-    }
-
-    boton_rect = pygame.Rect(WIDTH // 2 - 80, 460, 160, 60)
-
+    
     cursor_visible = True
     cursor_timer = 0
 
     running = True
 
     while running:
+        WIDTH, HEIGHT = screen.get_size()
+        font, label_font, button_font = crear_fuentes(HEIGHT)
+        boxes = crear_boxes(WIDTH, HEIGHT)
+        boton_rect = crear_boton(WIDTH, HEIGHT)
 
         #hace que el cursor dentro de los espacios donde se escribe, parpadee
         dt = clock.tick(60)
@@ -154,6 +181,13 @@ def input_paciente():
 
         # Define lo que se hace cuando ya se llenaron los datos
         for event in pygame.event.get():
+
+            if event.type == pygame.VIDEORESIZE:
+                
+                WIDTH, HEIGHT = screen.get_size()
+                font, label_font, button_font = crear_fuentes(HEIGHT)
+                boxes = crear_boxes(WIDTH, HEIGHT)
+                boton_rect = crear_boton(WIDTH, HEIGHT)
 
             if event.type == pygame.QUIT:
                 running = False

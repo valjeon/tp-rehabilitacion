@@ -7,12 +7,10 @@ from guardar_datos import guardar_resultado
 
 pygame.init()
 #Defino las constantes y el formato de la pantalla
-WIDTH, HEIGHT = 900, 600
-X_BOTONES = 80
-ANCHO_BOTONES = 350
-X_SECUENCIA = 450
-ANCHO_SECUENCIA = 200
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+
+screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = screen.get_size()
+
 pygame.display.set_caption("Secuenciación AVD")
 font = pygame.font.SysFont(None, 36)
 big_font = pygame.font.SysFont(None, 40)
@@ -23,6 +21,18 @@ GREEN = (100, 200, 100)
 RED = (200, 100, 100)
 BUTTON = (100, 150, 255)
 HOVER = (150, 180, 255)
+
+def get_layout(WIDTH, HEIGHT):
+    left_x = WIDTH * 0.08
+    right_x = WIDTH * 0.55
+
+    button_width = WIDTH * 0.3
+    seq_width = WIDTH * 0.25
+
+    start_y = HEIGHT * 0.2
+    spacing = HEIGHT * 0.12
+
+    return left_x, right_x, button_width, seq_width, start_y, spacing
 
 clock = pygame.time.Clock()
 
@@ -96,8 +106,10 @@ def main():
     global pasos
     global seleccionados
     global inicio_tiempo
+    
 
     tiempos=[]
+    screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
     estado = "jugando"
     #defino la cantidad de rondas a jugar
     TOTAL_RONDAS = 5
@@ -113,14 +125,17 @@ def main():
     running = True
 
     while running:
-        
+        WIDTH, HEIGHT = screen.get_size()
         screen.fill(WHITE)
         titulo = big_font.render(
             f"Ordená los pasos: {actividad_actual}",
             True,
             (0, 0, 0)
         )
-        screen.blit(titulo, (180, 20))
+        screen.blit(
+            titulo,
+            (WIDTH//2 - titulo.get_width()//2, HEIGHT * 0.05)
+        )
         #Muestra la ronda en la que está
         texto_ronda = font.render(
             f"Ronda {ronda_actual} / {TOTAL_RONDAS}",
@@ -136,11 +151,12 @@ def main():
 
         for i, paso in enumerate(pasos):
             #ubica los botones uno abajo del otro espacionados
+            left_x, right_x, button_width, seq_width, start_y, spacing = get_layout(WIDTH, HEIGHT)
             rect = pygame.Rect(
-                80,
-                100 + i * 80,
-                ANCHO_BOTONES,
-                70
+                int(left_x),
+                int(start_y + i * spacing),
+                int(button_width),
+                int(HEIGHT * 0.1)
             )
             if rect.collidepoint(mouse_pos) and paso not in seleccionados:
                 color = HOVER
@@ -166,15 +182,15 @@ def main():
             True,
             (0, 0, 0)
         )
-        screen.blit(sec_titulo, (520, 100))
+        screen.blit(sec_titulo, (right_x, HEIGHT * 0.15))
 
         #ubica los pasos elegidos en columna
         for i, paso in enumerate(seleccionados):
             rect = pygame.Rect(
-                520,
-                140 + i * 70,
-                ANCHO_SECUENCIA,
-                60
+                int(right_x),
+                int(start_y + i * spacing),
+                int(seq_width),
+                int(HEIGHT * 0.09)
             )
             dibujar_texto_ajustado(
                 screen,
@@ -209,10 +225,10 @@ def main():
                 60
             )
             boton_menu = pygame.Rect(
-                WIDTH//2 + 20,
-                500,
-                150,
-                60
+                WIDTH * 0.4,
+                HEIGHT * 0.7,
+                WIDTH * 0.2,
+                HEIGHT * 0.1
             )
 
 
@@ -342,7 +358,9 @@ def main():
 
             if event.type == pygame.QUIT:
                 return
-            
+            if event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                WIDTH, HEIGHT = screen.get_size()
             if event.type == pygame.MOUSEBUTTONDOWN:
 
                 if estado == "jugando":

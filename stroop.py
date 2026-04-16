@@ -6,8 +6,8 @@ from guardar_datos import guardar_resultado
 
 pygame.init()
 #Define la pantalla
-WIDTH, HEIGHT = 800, 600
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
+screen = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = screen.get_size()
 pygame.display.set_caption("Efecto Stroop")
 #Define los colores
 colors = {
@@ -16,9 +16,12 @@ colors = {
     "AZUL": (0, 0, 255),
     "AMARILLO": (255, 255, 0)
 }
+
 #Define las fuentes y el tamaño del texto
-font = pygame.font.SysFont(None, 80)
-button_font = pygame.font.SysFont(None, 40)
+def get_fonts(HEIGHT):
+    main = pygame.font.SysFont(None, int(HEIGHT * 0.15))
+    button = pygame.font.SysFont(None, int(HEIGHT * 0.04))
+    return main, button
 
 #–--------------------------------
 #DEFINE CUANTAS RONDAS TIENE EL JUEGO
@@ -32,21 +35,39 @@ MIN_promedio_incongruente = 750
 
 
 #Función para crear botones
-def create_buttons():
+def create_buttons(WIDTH, HEIGHT):
     buttons = []
     names = list(colors.keys())
+    button_width = WIDTH * 0.12
+    button_height = HEIGHT * 0.08
+    spacing = WIDTH * 0.03
+    total_width = len(names) * button_width + (len(names)-1) * spacing
+    start_x = (WIDTH - total_width) // 2
+    y = HEIGHT * 0.75
+
     for i, name in enumerate(names):
-        #posiciona los botones uno al lado del otro, espaciándolos
-        rect = pygame.Rect(150 + i*130, 450, 120, 50)
+        rect = pygame.Rect(
+            start_x + i * (button_width + spacing),
+            y,
+            button_width,
+            button_height
+        )
         buttons.append((name, rect))
+
     return buttons
 
-buttons = create_buttons()
 #define el boton para salir del juego
-quit_button = pygame.Rect(WIDTH - 140, 20, 120, 40)
+
+def get_quit_button(WIDTH, HEIGHT):
+    return pygame.Rect(
+        WIDTH * 0.85,
+        HEIGHT * 0.03,
+        WIDTH * 0.12,
+        HEIGHT * 0.06
+    )
 
 #Función que formatea la pantalla
-def draw_screen(word, color):
+def draw_screen(word, color, WIDTH, HEIGHT, buttons, quit_button, button_font, font):
     screen.fill((255, 255, 255))
     # Palabra estímulo
     text = font.render(word, True, color)
@@ -83,7 +104,7 @@ def render_text_fit(text, max_width):
     return surface
 
 #Hace que devuelva "correcto" o "incorrecto" una vez que se juega una ronda
-def show_feedback(correct):
+def show_feedback(correct, font):
     screen.fill((255, 255, 255))
     msg = "CORRECTO" if correct else "INCORRECTO"
     color = (0, 255, 0) if correct else (255, 0, 0)
@@ -101,9 +122,15 @@ def get_random_stimulus():
     return word, colors[color_name], color_name
 
 #PRIMERA PANTALLA con instrucciones, antes de que empiece el juego
-def show_instructions():
+def show_instructions(WIDTH, HEIGHT, font, button_font):
+    global screen
     waiting = True
-    start_button = pygame.Rect(300, 400, 200, 60)
+    start_button = pygame.Rect(
+        WIDTH * 0.35,
+        HEIGHT * 0.65,
+        WIDTH * 0.3,
+        HEIGHT * 0.1
+    )
     #el loop se mantiene hasta que el usuario presiona el botón para empezar
     while waiting:
         screen.fill((255, 255, 255))
@@ -131,11 +158,15 @@ def show_instructions():
         button_text = button_font.render("Comenzar", True, (255, 255, 255))
         screen.blit(button_text, (
             start_button.x + (start_button.width - button_text.get_width()) // 2,
-            start_button.y + 15
+            start_button.y + 30
         ))
         pygame.display.flip()
 
         for event in pygame.event.get():
+            if event.type == pygame.VIDEORESIZE:
+                screen = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                WIDTH, HEIGHT = screen.get_size()
+
             if event.type == pygame.QUIT:
                 return False #si el usuario cierra la ventana, se termina la función
 
@@ -145,9 +176,11 @@ def show_instructions():
 
 
 def main():
-    
+    WIDTH, HEIGHT = screen.get_size()
+    font, button_font = get_fonts(HEIGHT)
+
     #Muestra la pantalla de las instrucciones
-    if not show_instructions():
+    if not show_instructions(WIDTH, HEIGHT, font, button_font):
             return
     #Inicializo las variables a utilizar
     correct_count = 0
@@ -164,10 +197,14 @@ def main():
         answered = False
         #marca el tiempo de comienzo
         start_time = time.time()
+        quit_button = get_quit_button(WIDTH, HEIGHT)
 
         while not answered:
             #dibuja en la pantalla
-            draw_screen(word, color)
+            buttons = create_buttons(WIDTH, HEIGHT)
+            quit_button = get_quit_button(WIDTH, HEIGHT)
+            draw_screen(word, color, WIDTH, HEIGHT, buttons, quit_button, font, button_font)
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -179,7 +216,7 @@ def main():
                     if quit_button.collidepoint(mouse_pos):
                         #guardar_resultado("stroop_parcial", results)
                         return  # vuelve al menú / termina el juego
-                    
+
                     for name, rect in buttons:
                         if rect.collidepoint(mouse_pos):
                             #cuando selecciona una opción de las mostradas
@@ -207,7 +244,7 @@ def main():
                             }
                             results.append(trial_data)
                             #muestra la pantalla de "correcto"
-                            show_feedback(correct)
+                            show_feedback(correct, font)
                             answered = True
                             #sale del loop
                             break

@@ -8,16 +8,16 @@ from datos_fonologicos import ejemplo1
 ANCHO = 800
 ALTO = 600
 X = 50
-WIDTH = 700
 pygame.init()
 
-pantalla = pygame.display.set_mode((800, 600)) #defino el tamaño de la pantalla del juego
+pantalla = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
+WIDTH, HEIGHT = pantalla.get_size()
 pygame.display.set_caption("Prueba de Denominación Fonológica") #Título de la pestaña de pygame
 
 
 #Función para ajustar el texto a la pantalla
-def dibujar_texto_ajustado(surface, texto,y,font, color):
-    rect = pygame.Rect(100, y, 600, 100)
+def dibujar_texto_ajustado(surface, texto, y, font, color, WIDTH):
+    rect = pygame.Rect(WIDTH * 0.1, y, WIDTH * 0.8, HEIGHT * 0.15)
     lineas = []
     palabras = texto.split(" ")
     linea = ""
@@ -38,7 +38,11 @@ def dibujar_texto_ajustado(surface, texto,y,font, color):
 
         surface.blit(render, (x_texto, y_offset))
         y_offset += font.get_height()
-    
+
+def escalar_imagen(imagen, WIDTH, HEIGHT):
+    size = int(min(WIDTH, HEIGHT) * 0.4)
+    return pygame.transform.scale(imagen, (size, size))
+
 #Defino una función que haga el juego con las fotos dadas como datos
 def selecciones():
     carpeta = os.path.dirname(__file__)
@@ -47,18 +51,25 @@ def selecciones():
     #Todos los comandos para buscar las fotos en mi carpeta
     ruta = os.path.join(carpeta, foto_juego["imagen"])
     imagen = pygame.image.load(ruta)
-    imagen = pygame.transform.scale(imagen, (300, 300))
+    imagen = escalar_imagen(imagen, WIDTH, HEIGHT)
 
     return foto_juego, opciones, imagen #la función devuelve todo para ya dejar listo el juego
 
+def get_fonts(HEIGHT):
+    return (
+        pygame.font.SysFont(None, int(HEIGHT * 0.05)),
+        pygame.font.SysFont(None, int(HEIGHT * 0.08))
+    )
+
+fuente_chica, fuente_grande = get_fonts(HEIGHT)
+
 def prueba_fonologica():
-    
-    fuente = pygame.font.SysFont(None, 40)
     #inicializo las variables a utilizar
     tiempo_inicio_jugada = 0 
     tiempos_respuesta = []
     correctas=0
     incorrectas=0
+    pantalla = pygame.display.set_mode((0, 0), pygame.RESIZABLE)
 
     #Acá defino todo para la primera parte del juego en la ventana de inicio
     estado = "intro"
@@ -71,12 +82,10 @@ def prueba_fonologica():
     duracion_mensaje = 500
     rect_volver = None
     running = True
-
-    fuente_grande = pygame.font.SysFont(None, 60) #Otra vez hay dos mensajes de tamaño distinto que quiero que estén en la pantalla
-    fuente_chica = pygame.font.SysFont(None, 40)
-
+    rect_comenzar = pygame.Rect(0,0,0,0)
 
     while running:
+        WIDTH, HEIGHT = pantalla.get_size()
         pantalla.fill((255, 255, 255))
         mouse_pos = pygame.mouse.get_pos() #Ve donde se posiciona el mouse
 
@@ -84,7 +93,11 @@ def prueba_fonologica():
         for event in pygame.event.get():
             if event.type == pygame.QUIT: #Cuando selecciona que quiere salir, cambio el estado a falso que detiene el while
                 running = False
-
+            if event.type == pygame.VIDEORESIZE:
+                pantalla = pygame.display.set_mode((event.w, event.h), pygame.RESIZABLE)
+                WIDTH, HEIGHT = pantalla.get_size()
+                fuente_chica, fuente_grande = get_fonts(HEIGHT)
+                
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if estado == "intro": #Cosa de que cuando arranca la prueba le muestre la pantalla de "bienvenida"
                     if rect_comenzar.collidepoint(mouse_pos):
@@ -144,7 +157,8 @@ def prueba_fonologica():
                 "Comenzarás una prueba de denominación fonológica",
                 y,
                 fuente_grande,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
 
             y += 100 + espacio
@@ -154,7 +168,8 @@ def prueba_fonologica():
                 "Recordá que tenés que elegir la palabra que corresponde a la foto que aparece en la pantalla",
                 y,
                 fuente_chica,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
 
             y += 100 + espacio
@@ -164,7 +179,8 @@ def prueba_fonologica():
                 "¿Estás listo?",
                 y,
                 fuente_chica,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
 
             # Botón Comenzar para que pueda elegir cuando arrancar concretamente, le defino posición y colores
@@ -192,12 +208,13 @@ def prueba_fonologica():
                 "¿Qué opción es la correcta?",
                 y,
                 fuente_chica,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
             # Botones de opciones
             botones = []
-            ancho_boton = 180
-            alto_boton = 60
+            ancho_boton = WIDTH * 0.18
+            alto_boton = HEIGHT * 0.08
             espacio = 20
             y_botones = 500
             total_ancho = len(opciones)*ancho_boton + (len(opciones)-1)*espacio
@@ -206,7 +223,7 @@ def prueba_fonologica():
             for i, opcion in enumerate(opciones): #los ubico equiespaciados y centrados, formateando su texto
                 x = x_base + i*(ancho_boton + espacio)
                 rect = pygame.Rect(x, y_botones, ancho_boton, alto_boton)
-                texto = fuente.render(opcion, True, (0, 0, 0))
+                texto = fuente_chica.render(opcion, True, (0, 0, 0))
                 texto_rect = texto.get_rect(center=rect.center)
                 botones.append((rect, texto, texto_rect, opcion))
 
@@ -223,7 +240,8 @@ def prueba_fonologica():
                     "¡Correcto!" if estado == "correcto" else "¡Incorrecto!",
                     y,
                     fuente_grande,
-                    (0, 180, 0) if estado == "correcto" else (255, 0, 0)
+                    (0, 180, 0) if estado == "correcto" else (255, 0, 0),
+                    WIDTH
                 )
                 y += 120
                 dibujar_texto_ajustado(
@@ -231,7 +249,8 @@ def prueba_fonologica():
                     "Siguiente pregunta...",
                     y,
                     fuente_chica,
-                    (0, 0, 0)
+                    (0, 0, 0),
+                    WIDTH
                 )
             # Le doy un tiempo de 3 segundos para poder leer ese mensaje y seguir que lo registro con un ticks y luego pasa automáticamente
                 if pygame.time.get_ticks() - tiempo_mensaje > duracion_mensaje:
@@ -248,7 +267,8 @@ def prueba_fonologica():
                 "¡Has completado 5 pruebas!",
                 y,
                 fuente_grande,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
             y += 60
             dibujar_texto_ajustado(
@@ -256,7 +276,8 @@ def prueba_fonologica():
                 "¿Deseas seguir jugando?",
                 y,
                 fuente_grande,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
 
             # BOTONES SI / NO para que elegir
@@ -272,7 +293,7 @@ def prueba_fonologica():
             for i, opcion in enumerate(opciones_fin): #ubicación equiespaciada y bien dentro de la pantalla final
                 x = x_base + i*(ancho_boton + espacio)
                 rect = pygame.Rect(x, y_botones, ancho_boton, alto_boton)
-                texto_btn = fuente.render(opcion, True, (0, 0, 0))
+                texto_btn = fuente_chica.render(opcion, True, (0, 0, 0))
                 texto_rect_btn = texto_btn.get_rect(center=rect.center)
                 botones_fin.append((rect, texto_btn, texto_rect_btn, opcion))
 
@@ -288,7 +309,8 @@ def prueba_fonologica():
                 "¡Enhorabuena! La prueba ya terminó",
                 y,
                 fuente_grande,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
             y += 90
             dibujar_texto_ajustado(
@@ -296,7 +318,8 @@ def prueba_fonologica():
                 "Tus resultados fueron los siguientes:",
                 y,
                 fuente_chica,
-                (0, 0, 0)
+                (0, 0, 0),
+                WIDTH
             )
             
             #Armo una tabla para presentarlos
