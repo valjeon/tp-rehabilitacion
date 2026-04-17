@@ -83,9 +83,10 @@ def prueba_fonologica():
     rect_volver = None
     running = True
     rect_comenzar = pygame.Rect(0,0,0,0)
+    WIDTH, HEIGHT = pantalla.get_size()
+    fuente_chica, fuente_grande = get_fonts(HEIGHT)
 
     while running:
-        WIDTH, HEIGHT = pantalla.get_size()
         pantalla.fill((255, 255, 255))
         mouse_pos = pygame.mouse.get_pos() #Ve donde se posiciona el mouse
 
@@ -100,14 +101,14 @@ def prueba_fonologica():
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if estado == "intro": #Cosa de que cuando arranca la prueba le muestre la pantalla de "bienvenida"
-                    if rect_comenzar.collidepoint(mouse_pos):
+                    if rect_comenzar.collidepoint(event.pos):
                         foto_juego, opciones, imagen = selecciones() #Le paso todo para que haga una seleccion random entre los de ejemplo1
                         tiempo_inicio_jugada = pygame.time.get_ticks()
                         estado = "jugando" #le cambio el estado para ir a la siguiente vista en el juego y poder jugar efectivamente
 
                 elif estado == "jugando":
                     for rect, texto, texto_rect, opcion in botones:
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(event.pos):
                             ciclos += 1 #cuento que va con la primera foto
                             tiempo_respuesta = pygame.time.get_ticks() - tiempo_inicio_jugada
                             tiempos_respuesta.append(tiempo_respuesta / 1000)  # in seconds
@@ -121,7 +122,7 @@ def prueba_fonologica():
 
                 elif estado == "fin_ciclos": #una vez que hace 10 ciclos, consideramos que se evaluo la condición, le pregunto al paciente qué quiere hacer
                     for rect, texto_btn, texto_rect_btn, opcion in botones_fin:
-                        if rect.collidepoint(mouse_pos):
+                        if rect.collidepoint(event.pos):
                             if opcion == "Si":
                                 ciclos = 0  # Reiniciar contador cosa de que si quiere seguir jugando pueda
                                 foto_juego, opciones, imagen = selecciones() #Se repite el juego nuevamente
@@ -131,7 +132,7 @@ def prueba_fonologica():
                                 estado = "final" #Le pongo los resultados en la pantalla
 
                 elif estado == "final":
-                    if rect_volver.collidepoint(mouse_pos):
+                    if rect_volver.collidepoint(event.pos):
                         #guarda en datos los resultados
                         datos = {
                                 "correctas": correctas,
@@ -252,7 +253,7 @@ def prueba_fonologica():
                     (0, 0, 0),
                     WIDTH
                 )
-            # Le doy un tiempo de 3 segundos para poder leer ese mensaje y seguir que lo registro con un ticks y luego pasa automáticamente
+            # Le doy un tiempo de para poder leer ese mensaje y seguir que lo registro con un ticks y luego pasa automáticamente
                 if pygame.time.get_ticks() - tiempo_mensaje > duracion_mensaje:
                     if ciclos >= 5: #si veo que pasaron esos ciclos que yo evaluo, paro y sino sigo
                         estado = "fin_ciclos"
@@ -303,7 +304,7 @@ def prueba_fonologica():
                 pantalla.blit(texto_btn, texto_rect_btn)
         
         elif estado == "final":
-            y = 60
+            y = 100
             dibujar_texto_ajustado(
                 pantalla,
                 "¡Enhorabuena! La prueba ya terminó",
@@ -324,7 +325,7 @@ def prueba_fonologica():
             
             #Armo una tabla para presentarlos
             
-            y = 220
+            y = 300
             ancho = 500
             alto = 50
             x = (pantalla.get_width() - ancho) // 2
@@ -340,7 +341,7 @@ def prueba_fonologica():
             ancho_boton = 220
             alto_boton = 60
             x_boton = (pantalla.get_width() - ancho_boton) // 2
-            y_boton = 500
+            y_boton = 600
 
             rect_volver = pygame.Rect(x_boton, y_boton, ancho_boton, alto_boton)
 
@@ -390,7 +391,6 @@ def prueba_fonologica():
 
                 # RIGHT CELL (value) → constrained inside right half
                 right_cell_left = x + col1_w
-                right_cell_width = ancho - col1_w
 
                 pantalla.blit(
                     t2,

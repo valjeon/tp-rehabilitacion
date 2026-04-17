@@ -147,7 +147,7 @@ def show_instructions(WIDTH, HEIGHT, font, button_font):
         #Escribe las instrucciones centradas
         for i, line in enumerate(instructions):
             txt = button_font.render(line, True, (0, 0, 0))
-            screen.blit(txt, (WIDTH//2 - txt.get_width()//2, 180 + i*40))
+            screen.blit(txt, (WIDTH//2 - txt.get_width()//2, 300 + i*40))
 
         # Cambia el color del botón según si el mouse está sobre él o no
         mouse = pygame.mouse.get_pos()
@@ -203,7 +203,7 @@ def main():
             #dibuja en la pantalla
             buttons = create_buttons(WIDTH, HEIGHT)
             quit_button = get_quit_button(WIDTH, HEIGHT)
-            draw_screen(word, color, WIDTH, HEIGHT, buttons, quit_button, font, button_font)
+            draw_screen(word, color, WIDTH, HEIGHT, buttons, quit_button, button_font,font)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -275,8 +275,8 @@ def main():
                 #muestra los resultados una vez finalizadas las rondas
                 screen.fill((255, 255, 255))
                 title = font.render("Resultados Stroop", True, (0, 0, 0))
-                centro = WIDTH//2 - title.get_width()//2
-                screen.blit(title, (centro, 100))
+                rect_title = title.get_rect(center=(WIDTH // 2, 200))
+                screen.blit(title, rect_title)
 
                 txt1 = button_font.render(f"Aciertos: {correct_count}", True, (0, 0, 0))
                 txt2 = button_font.render(f"Precisión: {accuracy}%", True, (0, 0, 0))
@@ -289,13 +289,21 @@ def main():
                 else:
                     txt4 = button_font.render(f"Tuvo un rendimiento mejor que el promedio!!!", True, (0, 0, 255))
 
-                screen.blit(txt1, (centro, 200))
-                screen.blit(txt2, (centro, 250))
-                screen.blit(txt3, (centro, 300))
-                screen.blit(txt4, (centro, 350))
+                rect1 = txt1.get_rect(center=(WIDTH // 2, 300))
+                screen.blit(txt1, rect1)
+
+                rect2 = txt2.get_rect(center=(WIDTH // 2, 350))
+                screen.blit(txt2, rect2)
+
+                rect3 = txt3.get_rect(center=(WIDTH // 2, 400))
+                screen.blit(txt3, rect3)
+
+                rect4 = txt4.get_rect(center=(WIDTH // 2, 450))
+                screen.blit(txt4, rect4)
 
                 #define el botón para volver al menú
-                menu_button = pygame.Rect(300, 420, 250, 60)
+                menu_button = pygame.Rect(0, 0, WIDTH * 0.25, HEIGHT * 0.08)
+                menu_button.center = (WIDTH // 2, HEIGHT * 0.75)
                 mouse = pygame.mouse.get_pos()
                 color = (150, 180, 255) if menu_button.collidepoint(mouse) else (100, 150, 255)
                 pygame.draw.rect(screen, color, menu_button)
